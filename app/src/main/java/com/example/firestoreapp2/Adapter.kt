@@ -1,6 +1,7 @@
 package com.example.firestoreapp2
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,10 +27,17 @@ class Adapter(var context: Context, var list: ArrayList<User>):RecyclerView.Adap
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.nameTxt.text = list.get(position).name
         holder.binding.passtxt.text = list.get(position).pass
+        holder.binding.updateBtn.setOnClickListener {
+            var intent = Intent(context, UpdateActivity::class.java)
+            intent.putExtra("NAME", list.get(position).name)
+            intent.putExtra("PASS", list.get(position).pass)
+            context.startActivity(intent)
+        }
         holder.binding.deleteBtn.setOnClickListener {
             val db = Firebase.firestore
             db.collection("users").document(list.get(position).id!!).delete().addOnSuccessListener {
                 Toast.makeText(context,"Delete", Toast.LENGTH_SHORT).show()
+                list.removeAt(position)
                 notifyDataSetChanged()
             }.addOnFailureListener({
                 Toast.makeText(context,"Failed to delete", Toast.LENGTH_SHORT).show()
